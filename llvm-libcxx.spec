@@ -13,7 +13,7 @@ Group:		Libraries
 Source0:	http://llvm.org/releases/%{version}/libcxx-%{version}.src.tar.xz
 # Source0-md5:	0a11efefd864ce6f321194e441f7e569
 URL:		http://libcxx.llvm.org/
-BuildRequires:	cmake >= 2.8
+BuildRequires:	cmake >= 3.4.3
 BuildRequires:	rpmbuild(macros) >= 1.605
 %if %{with gnu}
 BuildRequires:	libstdc++-devel
