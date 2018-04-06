@@ -5,13 +5,13 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	3.9.1
+Version:	6.0.0
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: http://releases.llvm.org/download.html
 Source0:	http://releases.llvm.org/%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	75a3214224301fc543fa6a38bdf7efe0
+# Source0-md5:	4ecad7dfd8ea636205d3ffef028df73a
 URL:		http://libcxx.llvm.org/
 BuildRequires:	cmake >= 3.4.3
 BuildRequires:	rpmbuild(macros) >= 1.605
@@ -47,6 +47,18 @@ Header files of LLVM LibC++ library.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki LLVM LibC++.
 
+%package static
+Summary:	Static LLVM LibC++ library
+Summary(pl.UTF-8):	Statyczna biblioteka LLVM LibC++
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static LLVM LibC++ library.
+
+%description static -l pl.UTF-8
+Statyczna biblioteka LLVM LibC++.
+
 %prep
 %setup -q -n libcxx-%{version}.src
 
@@ -55,7 +67,6 @@ install -d build
 cd build
 libsubdir=%{_lib}
 %cmake .. \
-	-DLIBCXX_ENABLE_CXX1Y=ON \
 	-DLIBCXX_LIBDIR_SUFFIX="${libsubdir#lib}" \
 %if %{with gnu}
 	-DLIBCXX_CXX_ABI=libstdc++ \
@@ -90,3 +101,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libc++.so
 %dir %{_includedir}/c++
 %{_includedir}/c++/v1
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libc++.a
+%{_libdir}/libc++experimental.a
