@@ -5,13 +5,13 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	6.0.0
+Version:	7.0.0
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: http://releases.llvm.org/download.html
 Source0:	http://releases.llvm.org/%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	4ecad7dfd8ea636205d3ffef028df73a
+# Source0-md5:	5ef835bf8c9f49611af4d5f3362d9658
 URL:		http://libcxx.llvm.org/
 BuildRequires:	cmake >= 3.4.3
 BuildRequires:	rpmbuild(macros) >= 1.605
@@ -99,10 +99,11 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libc++.so
+%{_libdir}/libc++experimental.a
+%{_libdir}/libc++fs.a
 %dir %{_includedir}/c++
 %{_includedir}/c++/v1
 
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libc++.a
-%{_libdir}/libc++experimental.a
