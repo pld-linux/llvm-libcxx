@@ -5,13 +5,13 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	7.0.1
+Version:	8.0.1
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: http://releases.llvm.org/download.html
-Source0:	http://releases.llvm.org/%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	aa9202ebb2aef2078fccfa24b3b1eed1
+Source0:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxx-%{version}.src.tar.xz
+# Source0-md5:	1f5a621c2d3d8edd94ef16dc55ae5547
 URL:		http://libcxx.llvm.org/
 BuildRequires:	cmake >= 3.4.3
 BuildRequires:	rpmbuild(macros) >= 1.605
