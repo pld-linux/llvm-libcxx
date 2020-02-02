@@ -5,13 +5,14 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	8.0.1
+Version:	9.0.1
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
-#Source0Download: http://releases.llvm.org/download.html
+#Source0Download: https://github.com/llvm/llvm-project/releases/
 Source0:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	1f5a621c2d3d8edd94ef16dc55ae5547
+# Source0-md5:	689a42dbae917ed2a20b92deb4fd6de7
+Patch0:		%{name}-experimental.patch
 URL:		http://libcxx.llvm.org/
 BuildRequires:	cmake >= 3.4.3
 BuildRequires:	rpmbuild(macros) >= 1.605
@@ -61,12 +62,14 @@ Statyczna biblioteka LLVM LibC++.
 
 %prep
 %setup -q -n libcxx-%{version}.src
+%patch0 -p1
 
 %build
 install -d build
 cd build
 libsubdir=%{_lib}
 %cmake .. \
+	-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=ON \
 	-DLIBCXX_LIBDIR_SUFFIX="${libsubdir#lib}" \
 %if %{with gnu}
 	-DLIBCXX_CXX_ABI=libstdc++ \
@@ -100,7 +103,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libc++.so
 %{_libdir}/libc++experimental.a
-%{_libdir}/libc++fs.a
 %dir %{_includedir}/c++
 %{_includedir}/c++/v1
 
