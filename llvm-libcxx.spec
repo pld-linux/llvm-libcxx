@@ -5,15 +5,20 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	10.0.1
+Version:	11.0.1
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: https://github.com/llvm/llvm-project/releases/
 Source0:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	714393873c4726be1792b63b904ce6e5
-Patch0:		%{name}-experimental.patch
-URL:		http://libcxx.llvm.org/
+# Source0-md5:	4b2467eb023c9b4c84335808f811d5fa
+#Source1Download: https://github.com/llvm/llvm-project/releases/
+Source1:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxxabi-%{version}.src.tar.xz
+# Source1-md5:	eea472a502b2dbe60f4b1c6e2e0631f1
+#Source2Download: https://github.com/llvm/llvm-project/releases/
+Source2:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/llvm-%{version}.src.tar.xz
+# Source2-md5:	6ec7ae9fd43da9b87cda15b3ab9cc7af
+URL:		https://libcxx.llvm.org/
 BuildRequires:	cmake >= 3.4.3
 BuildRequires:	rpmbuild(macros) >= 1.605
 %if %{with gnu}
@@ -61,14 +66,17 @@ Static LLVM LibC++ library.
 Statyczna biblioteka LLVM LibC++.
 
 %prep
-%setup -q -n libcxx-%{version}.src
-%patch0 -p1
+%setup -q -c -a1 -a2
+
+%{__mv} libcxx-%{version}.src libcxx
+%{__mv} libcxxabi-%{version}.src libcxxabi
+%{__mv} llvm-%{version}.src llvm
 
 %build
 install -d build
 cd build
 libsubdir=%{_lib}
-%cmake .. \
+%cmake ../libcxx \
 	-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=ON \
 	-DLIBCXX_LIBDIR_SUFFIX="${libsubdir#lib}" \
 %if %{with gnu}
@@ -95,7 +103,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc CREDITS.TXT LICENSE.TXT
+%doc libcxx/{CREDITS.TXT,LICENSE.TXT,TODO.TXT}
 %attr(755,root,root) %{_libdir}/libc++.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libc++.so.1
 
