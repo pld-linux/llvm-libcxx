@@ -5,19 +5,21 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	14.0.6
+Version:	15.0.7
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: https://github.com/llvm/llvm-project/releases/
 Source0:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	3d5630a8dcbec623172e57fae890351b
+# Source0-md5:	c2c0724be18c153ab902a5a880796af8
 #Source1Download: https://github.com/llvm/llvm-project/releases/
 Source1:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxxabi-%{version}.src.tar.xz
-# Source1-md5:	e56dac07bbcdd6582f673333a3884a2d
+# Source1-md5:	c1f77222397506239dd79d8109a9113d
 #Source2Download: https://github.com/llvm/llvm-project/releases/
 Source2:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/llvm-%{version}.src.tar.xz
-# Source2-md5:	80072c6a4be8b9adb60c6aac01f577db
+# Source2-md5:	c77db4c71e1eb267358204dffe2c6e10
+Source3:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/cmake-%{version}.src.tar.xz
+# Source3-md5:	5be9535f0b93cb6232d0171a8abb3137
 URL:		https://libcxx.llvm.org/
 # or gcc 10+
 BuildRequires:	clang >= %{version}
@@ -69,11 +71,12 @@ Static LLVM LibC++ library.
 Statyczna biblioteka LLVM LibC++.
 
 %prep
-%setup -q -c -a1 -a2
+%setup -q -c -a1 -a2 -a3
 
 %{__mv} libcxx-%{version}.src libcxx
 %{__mv} libcxxabi-%{version}.src libcxxabi
 %{__mv} llvm-%{version}.src llvm
+%{__mv} cmake-%{version}.src cmake
 
 %build
 %if %{without gnu}
@@ -81,21 +84,20 @@ Statyczna biblioteka LLVM LibC++.
 CC="clang"
 CXX="clang++"
 %endif
-install -d build
-cd build
 libsubdir=%{_lib}
-%cmake ../libcxx \
+%cmake -B build -S libcxx \
 	-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=ON \
+	-DLIBCXX_INCLUDE_BENCHMARKS=OFF \
 	-DLIBCXX_LIBDIR_SUFFIX="${libsubdir#lib}" \
 %if %{with gnu}
 	-DLIBCXX_CXX_ABI=libstdc++ \
 	-DLIBCXX_CXX_ABI_INCLUDE_PATHS="%{_includedir}/c++/%{cxx_version};%{_includedir}/c++/%{cxx_version}/%{_host}"
 %else
-	-DLIBCXX_CXX_ABI=libcxxabi \
+	-DLIBCXX_CXX_ABI=system-libcxxabi \
 	-DLIBCXX_CXX_ABI_INCLUDE_PATHS="%{_includedir}/libcxxabi"
 %endif
 
-%{__make}
+%{__make} -C build
 
 %install
 rm -rf $RPM_BUILD_ROOT
