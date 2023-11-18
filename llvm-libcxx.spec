@@ -1,56 +1,50 @@
-#
-# Conditional build:
-%bcond_with	gnu	# GNU libstdc++/libsupc++ ABI instead of LLVM libcxxabi
-#
+# TODO: libcxx and libunwind docs
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	15.0.7
+Version:	17.0.4
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: https://github.com/llvm/llvm-project/releases/
 Source0:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	c2c0724be18c153ab902a5a880796af8
+# Source0-md5:	0b145c6579cd6288d0fc73c4ed552270
 #Source1Download: https://github.com/llvm/llvm-project/releases/
 Source1:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxxabi-%{version}.src.tar.xz
-# Source1-md5:	c1f77222397506239dd79d8109a9113d
+# Source1-md5:	7a8d19b8befcf6c3b3af3574c96a97b7
 #Source2Download: https://github.com/llvm/llvm-project/releases/
-Source2:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/llvm-%{version}.src.tar.xz
-# Source2-md5:	c77db4c71e1eb267358204dffe2c6e10
+Source2:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libunwind-%{version}.src.tar.xz
+# Source2-md5:	b36bd4b893785399b8b1f2ec31eee8ee
+#Source3Download: https://github.com/llvm/llvm-project/releases/
 Source3:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/cmake-%{version}.src.tar.xz
-# Source3-md5:	5be9535f0b93cb6232d0171a8abb3137
+# Source3-md5:	38ae9cc0950f277c8f88e570c4d18010
+Source4:	https://github.com/llvm/llvm-project/raw/llvmorg-%{version}/runtimes/cmake/Modules/HandleFlags.cmake
+# Source4-md5:	fd2dadedcdd386d8fa40753667c1f841
+Source5:	https://github.com/llvm/llvm-project/raw/llvmorg-%{version}/runtimes/cmake/Modules/WarningFlags.cmake
+# Source5-md5:	5f0b85459e004a406031c7455a691488
 URL:		https://libcxx.llvm.org/
 # or gcc 10+
 BuildRequires:	clang >= %{version}
-BuildRequires:	cmake >= 3.13.4
+BuildRequires:	cmake >= 3.20.0
 BuildRequires:	python3 >= 1:3
 BuildRequires:	rpmbuild(macros) >= 1.605
-%if %{with gnu}
-BuildRequires:	libstdc++-devel >= 6:10
-%else
-BuildRequires:	llvm-libcxxabi-devel
-%endif
+Requires:	llvm-libcxxabi = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 libc++ is a new implementation of the C++ standard library, targeting
-C++11.
+C++11 and above.
 
 %description -l pl.UTF-8
 libc++ to nowa implementacja biblioteki standardowej C++ ze wskazaniem
-na standard C++11.
+na standard C++11 i nowsze.
 
 %package devel
 Summary:	Header files of LLVM LibC++ library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki LLVM LibC++
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-%if %{with gnu}
-Requires:	libstdc++-devel
-%else
-Requires:	llvm-libcxxabi-devel
-%endif
+Requires:	llvm-libcxxabi-devel = %{version}-%{release}
 
 %description devel
 Header files of LLVM LibC++ library.
@@ -70,13 +64,98 @@ Static LLVM LibC++ library.
 %description static -l pl.UTF-8
 Statyczna biblioteka LLVM LibC++.
 
+%package -n llvm-libcxxabi
+Summary:	libc++abi - C++ standard library support from LLVM project
+Summary(pl.UTF-8):	libc++abi - wsparcie dla biblioteki standardowej C++ z projektu LLVM
+Group:		Libraries
+URL:		https://libcxxabi.llvm.org/
+
+%description -n llvm-libcxxabi
+libc++abi is a new implementation of low level support for a standard
+C++ library.
+
+%description -n llvm-libcxxabi -l pl.UTF-8
+libc++abi to nowa implementacja niskopoziomowego wsparcia dla
+biblioteki standardowej C++.
+
+%package -n llvm-libcxxabi-devel
+Summary:	Development files for LLVM libc++abi library
+Summary(pl.UTF-8):	Pliki programistyczne biblioteki LLVM libc++abi
+Group:		Development/Libraries
+URL:		https://libcxxabi.llvm.org/
+Requires:	llvm-libcxxabi = %{version}-%{release}
+
+%description -n llvm-libcxxabi-devel
+Development files for LLVM libc++abi library.
+
+%description -n llvm-libcxxabi-devel -l pl.UTF-8
+Pliki programistyczne biblioteki LLVM libc++abi.
+
+%package -n llvm-libcxxabi-static
+Summary:	Static LLVM libc++abi library
+Summary(pl.UTF-8):	Statyczna biblioteka LLVM libc++abi
+Group:		Development/Libraries
+URL:		https://libcxxabi.llvm.org/
+Requires:	llvm-libcxxabi-devel = %{version}-%{release}
+
+%description -n llvm-libcxxabi-static
+Static LLVM libc++abi library.
+
+%description -n llvm-libcxxabi-static -l pl.UTF-8
+Statyczna biblioteka LLVM libc++abi.
+
+%package -n llvm-libunwind
+Summary:	LLVM libunwind implementation
+Summary(pl.UTF-8):	Implementacja biblioteki libunwind z projektu LLVM
+Group:		Libraries
+
+%description -n llvm-libunwind
+LLVM libunwind implementation.
+
+%description -n llvm-libunwind -l pl.UTF-8
+Implementacja biblioteki libunwind z projektu LLVM.
+
+%package -n llvm-libunwind-devel
+Summary:	Header file for LLVM libunwind implementation
+Summary(pl.UTF-8):	Plik nagłówkowy implementacji LLVM libunwind
+Group:		Development/Libraries
+Requires:	llvm-libunwind = %{version}-%{release}
+
+%description -n llvm-libunwind-devel
+Header file for LLVM libunwind implementation.
+
+%description -n llvm-libunwind-devel -l pl.UTF-8
+Plik nagłówkowy implementacji LLVM libunwind.
+
+%package -n llvm-libunwind-static
+Summary:	Static LLVM libunwind library
+Summary(pl.UTF-8):	Statyczna biblioteka LLVM libunwind
+Group:		Development/Libraries
+Requires:	llvm-libunwind-devel = %{version}-%{release}
+
+%description -n llvm-libunwind-static
+Static LLVM libunwind library.
+
+%description -n llvm-libunwind-static -l pl.UTF-8
+Statyczna biblioteka LLVM libunwind.
+
 %prep
 %setup -q -c -a1 -a2 -a3
 
+install -d runtimes
 %{__mv} libcxx-%{version}.src libcxx
 %{__mv} libcxxabi-%{version}.src libcxxabi
-%{__mv} llvm-%{version}.src llvm
-%{__mv} cmake-%{version}.src cmake
+%{__mv} libunwind-%{version}.src libunwind
+%{__mv} cmake-%{version}.src runtimes/cmake
+cp -p %{SOURCE4} %{SOURCE5} runtimes/cmake/Modules
+
+cat >CMakeLists.txt <<EOF
+cmake_minimum_required(VERSION 3.20.0)
+project(Runtimes C CXX ASM)
+add_subdirectory(libcxxabi)
+add_subdirectory(libcxx)
+add_subdirectory(libunwind)
+EOF
 
 %build
 %if %{without gnu}
@@ -85,17 +164,13 @@ CC="clang"
 CXX="clang++"
 %endif
 libsubdir=%{_lib}
-%cmake -B build -S libcxx \
+%cmake -B build \
 	-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=ON \
 	-DLIBCXX_INCLUDE_BENCHMARKS=OFF \
 	-DLIBCXX_LIBDIR_SUFFIX="${libsubdir#lib}" \
-%if %{with gnu}
-	-DLIBCXX_CXX_ABI=libstdc++ \
-	-DLIBCXX_CXX_ABI_INCLUDE_PATHS="%{_includedir}/c++/%{cxx_version};%{_includedir}/c++/%{cxx_version}/%{_host}"
-%else
-	-DLIBCXX_CXX_ABI=system-libcxxabi \
-	-DLIBCXX_CXX_ABI_INCLUDE_PATHS="%{_includedir}/libcxxabi"
-%endif
+	-DLIBCXXABI_LIBDIR_SUFFIX="${libsubdir#lib}" \
+	-DLIBUNWIND_INSTALL_INCLUDE_DIR=%{_includedir}/llvm-libunwind \
+	-DLIBUNWIND_LIBDIR_SUFFIX="${libsubdir#lib}"
 
 %{__make} -C build
 
@@ -105,11 +180,23 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} -C build install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+# allow parallel installation with libunwind
+install -d $RPM_BUILD_ROOT%{_libdir}/llvm-libunwind
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libunwind.so
+ln -snf ../$(basename $RPM_BUILD_ROOT%{_libdir}/libunwind.so.*.*) $RPM_BUILD_ROOT%{_libdir}/llvm-libunwind/libunwind.so
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/libunwind.a $RPM_BUILD_ROOT%{_libdir}/llvm-libunwind
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
+%post	-n llvm-libcxxabi -p /sbin/ldconfig
+%postun	-n llvm-libcxxabi -p /sbin/ldconfig
+
+%post	-n llvm-libunwind -p /sbin/ldconfig
+%postun	-n llvm-libunwind -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
@@ -121,9 +208,44 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libc++.so
 %{_libdir}/libc++experimental.a
-%dir %{_includedir}/c++
-%{_includedir}/c++/v1
+%{_includedir}/c++/v1/*
+%exclude %{_includedir}/c++/v1/cxxabi.h
+%exclude %{_includedir}/c++/v1/__cxxabi_config.h
 
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libc++.a
+
+%files -n llvm-libcxxabi
+%defattr(644,root,root,755)
+%doc libcxxabi/{CREDITS.TXT,LICENSE.TXT}
+%attr(755,root,root) %{_libdir}/libc++abi.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libc++abi.so.1
+
+%files -n llvm-libcxxabi-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libc++abi.so
+%dir %{_includedir}/c++
+%dir %{_includedir}/c++/v1
+%{_includedir}/c++/v1/cxxabi.h
+%{_includedir}/c++/v1/__cxxabi_config.h
+
+%files -n llvm-libcxxabi-static
+%defattr(644,root,root,755)
+%{_libdir}/libc++abi.a
+
+%files -n llvm-libunwind
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libunwind.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libunwind.so.1
+
+%files -n llvm-libunwind-devel
+%defattr(644,root,root,755)
+%doc libunwind/LICENSE.TXT
+%dir %{_libdir}/llvm-libunwind
+%attr(755,root,root) %{_libdir}/llvm-libunwind/libunwind.so
+%{_includedir}/llvm-libunwind
+
+%files -n llvm-libunwind-static
+%defattr(644,root,root,755)
+%{_libdir}/llvm-libunwind/libunwind.a
