@@ -2,26 +2,26 @@
 Summary:	LibC++ - C++ standard library from LLVM project
 Summary(pl.UTF-8):	LibC++ - biblioteka standardowa C++ z projektu LLVM
 Name:		llvm-libcxx
-Version:	17.0.4
+Version:	19.1.7
 Release:	1
 License:	MIT or BSD-like
 Group:		Libraries
 #Source0Download: https://github.com/llvm/llvm-project/releases/
 Source0:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxx-%{version}.src.tar.xz
-# Source0-md5:	0b145c6579cd6288d0fc73c4ed552270
+# Source0-md5:	82dad4d1be8d7390f05ebcf65e19fbdc
 #Source1Download: https://github.com/llvm/llvm-project/releases/
 Source1:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libcxxabi-%{version}.src.tar.xz
-# Source1-md5:	7a8d19b8befcf6c3b3af3574c96a97b7
+# Source1-md5:	abbd3e2df635e1df5d90b507ecac141b
 #Source2Download: https://github.com/llvm/llvm-project/releases/
 Source2:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/libunwind-%{version}.src.tar.xz
-# Source2-md5:	b36bd4b893785399b8b1f2ec31eee8ee
+# Source2-md5:	32e100deacedceebab60772edf5d379a
 #Source3Download: https://github.com/llvm/llvm-project/releases/
 Source3:	https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/cmake-%{version}.src.tar.xz
-# Source3-md5:	38ae9cc0950f277c8f88e570c4d18010
+# Source3-md5:	52b5249a06305e19c3bdae2e972c99c3
 Source4:	https://github.com/llvm/llvm-project/raw/llvmorg-%{version}/runtimes/cmake/Modules/HandleFlags.cmake
 # Source4-md5:	fd2dadedcdd386d8fa40753667c1f841
 Source5:	https://github.com/llvm/llvm-project/raw/llvmorg-%{version}/runtimes/cmake/Modules/WarningFlags.cmake
-# Source5-md5:	5f0b85459e004a406031c7455a691488
+# Source5-md5:	892fda2cd869e0a03c82db3c8f7ac8a4
 URL:		https://libcxx.llvm.org/
 # or gcc 10+
 BuildRequires:	clang >= %{version}
@@ -160,17 +160,22 @@ EOF
 %build
 %if %{without gnu}
 # requires C++20 compiler (clang ? or gcc 10+)
-CC="clang"
-CXX="clang++"
+%define	__cc		clang
+%define	__cxx		clang++
+# not supported by clang
+%define	filterout	-Werror=trampolines
 %endif
 libsubdir=%{_lib}
 %cmake -B build \
-	-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=ON \
+	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+	-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=ON \
 	-DLIBCXX_INCLUDE_BENCHMARKS=OFF \
 	-DLIBCXX_LIBDIR_SUFFIX="${libsubdir#lib}" \
 	-DLIBCXXABI_LIBDIR_SUFFIX="${libsubdir#lib}" \
 	-DLIBUNWIND_INSTALL_INCLUDE_DIR=%{_includedir}/llvm-libunwind \
-	-DLIBUNWIND_LIBDIR_SUFFIX="${libsubdir#lib}"
+	-DLIBUNWIND_LIBDIR_SUFFIX="${libsubdir#lib}" \
+	-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+	-DPython3_EXECUTABLE=%{__python3}
 
 %{__make} -C build
 
@@ -208,9 +213,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libc++.so
 %{_libdir}/libc++experimental.a
+%{_libdir}/libc++.modules.json
 %{_includedir}/c++/v1/*
 %exclude %{_includedir}/c++/v1/cxxabi.h
 %exclude %{_includedir}/c++/v1/__cxxabi_config.h
+%{_datadir}/libc++
 
 %files static
 %defattr(644,root,root,755)
